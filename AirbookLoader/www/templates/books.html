@@ -1,9 +1,10 @@
 <ion-view title="Books">
   <ion-content>
     <ion-list>
-        <ion-item ng-repeat="book in books">
-        <h3>{{book.title}}</h3>
-        <p>{{book.description}}</p>
+        <ion-item class="item-button-right" ng-repeat="book in books">
+            <h3>{{book.title}}</h3>
+            <p>{{book.description}}</p>
+            <button class="button button-clear">edit</button>
         </ion-item>
 
         <ion-infinite-scroll

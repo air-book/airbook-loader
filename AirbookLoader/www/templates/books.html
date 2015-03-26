@@ -1,7 +1,21 @@
 <ion-view title="Books">
   <ion-content>
-    <ion-list>
-        <ion-item class="item-button-right" ng-repeat="book in books">
+    <div class="card" ng-if="appUser.email && hasNoBookshop">
+        <div class="item">
+            <h2>No bookshop</h2>
+            <p>Your user has no bookshop ... sorry!</p>
+        </div>
+        
+    </div>
+    <div class="card" ng-if="!appUser.email">
+        <div class="item">
+            <h2>Not logged</h2>
+            <p>Seems like you are not logged in</p>
+        </div>
+        
+    </div>
+    <ion-list ng-if="!hasNoBookshop">
+        <ion-item class="item-button-right" ng-repeat="book in books" ui-sref="app.books.detail({bookId:book.id})">
             <h3>{{book.title}}</h3>
             <p>{{book.description}}</p>
             <button class="button button-clear">edit</button>
@@ -16,6 +30,6 @@
     </ion-list>
   </ion-content>
   <ion-footer-bar class="bar-dark">
-    <button class="button button-calm">Add book</button>
+    <button class="button button-calm" ui-sref="app.books.new">Add book</button>
   </ion-footer-bar>
 </ion-view>

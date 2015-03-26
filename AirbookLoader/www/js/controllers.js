@@ -10,6 +10,7 @@ angular.module('starter.controllers', [])
       AuthService.doLogout();
       $timeout(function(){
           $rootScope.appUser = {};
+          $rootScope.$broadcast('logoutSuccess');
       });
   };
 
@@ -18,6 +19,7 @@ angular.module('starter.controllers', [])
       .then(function(data){
           $timeout(function(){
               $rootScope.appUser = data;
+              $rootScope.$broadcast('loginSuccess');
           });
       });
   };
@@ -49,6 +51,7 @@ angular.module('starter.controllers', [])
             .then(function(data){
                 $timeout(function(){
                     $rootScope.appUser = data;
+                    $rootScope.$broadcast('loginSuccess');
                 });
                 $scope.closeLogin();
             });
@@ -65,6 +68,7 @@ angular.module('starter.controllers', [])
 
 
     $scope.books = [];
+    $scope.hasNoBookshop = false;
     $scope.filters = {
         min_price : null,
         max_price : null,
@@ -74,6 +78,9 @@ angular.module('starter.controllers', [])
     $scope.rangeFilter = [0, 100]
 
     var updateFromServer = function(page){
+        if(updating){
+          return;
+        }
         updating = true;
         var params = angular.copy($scope.filters);
         params.page = page;
@@ -82,17 +89,21 @@ angular.module('starter.controllers', [])
             $scope.books = [];
         }
 
-        Restangular.all('books/books').getList(params)
+        Restangular.all('books/booksadmin').getList(params)
         .then(function(data){
             $timeout(function(){
-              console.log("response", data.metadata.count);
               $scope.books = $scope.books.concat(data);
               $scope.metadata = data.metadata;
               console.log(1, $scope.metadata)
               updating = false;
+              $scope.hasNoBookshop = false;
               $scope.$broadcast('scroll.infiniteScrollComplete');
             })
-        });
+        })
+        .catch(function(err){
+          
+          $scope.hasNoBookshop = true;
+        })
     };
 
     $scope.updateBooks = function(){
@@ -105,6 +116,49 @@ angular.module('starter.controllers', [])
 
     updateFromServer(1);
 
+    $scope.$on('loginSuccess', function(){
+      updateFromServer(1);      
+    })
+
+    $scope.$on('logoutSuccess', function(){
+      $scope.books = [];
+    })
+
 })
 
+
+.controller('BookCtrl', function ($scope, Restangular, $timeout, $stateParams) {
+  Restangular.all('books/booksadmin').get($stateParams.bookId)
+  .then(function(data){
+    $scope.book = data;
+    $scope.bookCopy = angular.copy($scope.book);
+  })
+
+  $scope.save = function(){
+    $scope.book.patch();
+    $scope.bookCopy = angular.copy($scope.book);
+  }
+
+  $scope.undo = function(){
+    $scope.book = angular.copy($scope.bookCopy); 
+  }
+    
+})
+
+.controller('NewBookCtrl', function ($scope, Restangular, $timeout, $stateParams, $state) {
+  $scope.book = {}
+
+  $scope.save = function(){
+    Restangular.all('books/booksadmin').post($scope.book)
+    .then(function(data){
+      console.log(data)
+      $state.go('app.books.detail', {bookId:data.id})
+    })
+  }
+
+  $scope.undo = function(){
+    $scope.book = angular.copy($scope.bookCopy); 
+  }
+    
+})
 

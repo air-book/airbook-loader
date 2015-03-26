@@ -73,6 +73,7 @@ angular.module('starter', ['ionic', 'starter.controllers', 'restangular'])
 
   .state('app.books.list', {
     url : '/books',
+    cache : false,
     views: {
       '': {
         templateUrl: "templates/books.html",
@@ -81,14 +82,28 @@ angular.module('starter', ['ionic', 'starter.controllers', 'restangular'])
     }
   })
 
+  .state('app.books.new', {
+    url : '/new',
+    cache : false,
+    views: {
+      '': {
+        templateUrl: "templates/book.html",
+        controller : 'NewBookCtrl'
+      }
+    }
+  })
+
   .state('app.books.detail', {
     url : '/book/:bookId',
     views: {
       '': {
-        templateUrl: "templates/book.html"
+        templateUrl: "templates/book.html",
+        controller : 'BookCtrl'
       }
     }
   });
+
+
 
   
   

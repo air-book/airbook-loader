@@ -167,6 +167,149 @@ angular.module('persitent-records', [])
 ])
 
 
+.controller('PersistentRecordCtrl', 
+    ['$scope', '$attrs', '$timeout', '$q', '$ionicPopup',
+    function ($scope, $attrs, $timeout, $q, $ionicPopup) {
+        $scope.recordStatus = {
+            editable : false,
+            waitingForServer : false,
+            errors : null
+        };
+
+        $scope.$watch(
+            function(){ return $scope.$eval($attrs.editable) },
+            function(nv){ 
+                if (!angular.isUndefined(nv)){
+                    $scope.recordStatus.editable = nv; 
+                } else {
+                    $scope.recordStatus.editable = true; 
+                }
+            },
+            true
+        );
+
+
+        $scope.$watch(
+            function(){ return $scope.$eval($attrs.persistentRecord) },
+            function(nv){ 
+                if (!angular.isObject(nv)){
+                    $scope.record = {}; 
+                } else {
+                    $scope.record = nv; 
+                }
+            },
+            true
+        );
+
+        var dropItemFunction = null;
+        $scope.$watch(
+            function(){ return $scope.$eval($attrs.dropItem) },
+            function(nv){ 
+                if (!angular.isFunction(nv)){
+                    dropItemFunction = null; 
+                } else {
+                    dropItemFunction = nv; 
+                }
+            },
+            true
+        );
+
+        var saveItemFunction = null;
+        $scope.$watch(
+            function(){ return $scope.$eval($attrs.saveItem) },
+            function(nv){ 
+                if (!angular.isFunction(nv)){
+                    saveItemFunction = null; 
+                } else {
+                    saveItemFunction = nv; 
+                }
+            },
+            true
+        );
+        
+        
+        $scope.toReadMode = function(){
+            $scope.recordStatus.editable = false;
+        }
+
+        $scope.toEditMode = function(){
+            $scope.recordStatus.editable = true;
+        }
+
+
+
+        $scope.deleteWithConfirm = function(toState, toParams) {
+           var confirmPopup = $ionicPopup.confirm({
+             title: 'Eliminazione record',
+             template: 'Confermi l\'eliminazione?',
+             cancelText : 'Annulla'
+           });
+           confirmPopup.then(function(res) {
+             if(res) {
+                return $scope.delete(toState,toParams);
+             } else {
+               return;
+             }
+           });
+         };
+
+
+        $scope.delete = function(toState,toParams){
+            $scope.recordStatus.waitingForServer = true;
+            dropItemFunction($scope.record)
+                .then(function(resp){
+                    $scope.recordStatus.errors = null;
+                    if(toState){
+                        $state.go(toState, toParams);
+                    }
+                },
+                function(resp){
+                    $timeout(function(){
+                        $scope.recordStatus.errors = resp.data;
+                        $scope.recordStatus.waitingForServer = false;
+                    });
+
+                });
+        };
+
+
+
+        $scope.saveRecord = function(options){
+            $scope.recordStatus.waitingForServer = true;
+            return saveItemFunction($scope.record)
+                .then(
+                    function(saved){
+                        //$scope.update();
+                        $scope.recordStatus.errors = {};
+                        if(options.toReadMode){
+                            $scope.toReadMode();    
+                        }
+                    },
+                    function(resp){
+                        $scope.recordStatus.errors = resp.data;
+                    }
+                )
+                .finally(function(){
+                    $scope.recordStatus.waitingForServer = false;
+                })
+            
+        };
+
+
+        this.getRecord = function(){
+            return $scope.record;
+        }
+
+        this.setValue = function(key, value){
+            $scope.record[key] = value;
+        }
+
+
+
+    }
+])
+
+
 .directive('persistentCollection', [function () {
     return {
         restrict: 'A',
@@ -175,4 +318,74 @@ angular.module('persitent-records', [])
             
         }
     
+}])
+
+
+.directive('persistentRecord', [function () {
+    return {
+        restrict: 'A',
+        scope : true,
+        controller : 'PersistentRecordCtrl'
+            
+        }
+    
+}])
+
+
+.directive('persistentField', ['$compile', function($compile){
+    return {
+        restrict : 'A',
+        require : ['^persistentRecord', '^form'],
+        link: function (scope, element, attrs, controllers) {
+            
+            var fieldName = attrs.persistentField;
+            var modelName = "record."+ fieldName;
+            element.removeAttr('persistent-field');
+            attrs.$set('ngModel', modelName);
+            attrs.$set('name', fieldName);
+
+            var formCtrl = controllers[1];
+            var formName = formCtrl.$name;
+            
+            if(attrs.persistentFieldInit != undefined){
+                var recordController = controllers[0];
+                var record = recordController.getRecord()
+                if(record[fieldName] == undefined){
+                    recordController.setValue(fieldName, scope.$eval(attrs.persistentFieldInit));
+                }
+            }
+
+            //appending an error icon to label
+            var par = $(element).parent();
+            console.log("p",par)
+            var label = $(par).find('.input-label');
+            if(label.length){
+                var newElm = '<i class="icon assertive ion-alert-circled" ng-if="'+formName+'.'+ fieldName +'.$invalid || recordStatus.errors.'+fieldName+'"> </i>';
+                var el = $compile(newElm)(scope);
+                label.prepend(el);
+            };  
+
+            //appending server error msg
+            var newMsg = '<p class="item assertive" ng-if="recordStatus.errors.'+fieldName+'"><b>'+fieldName+'</b>: {{recordStatus.errors.'+fieldName+'[0]}}</p>';
+            var el = $compile(newMsg)(angular.element(par[0]).scope());
+            par.after(el);
+            
+            var tag = element.prop('tagName').toLowerCase();
+            if((tag == 'input' && (attrs.type == 'text' || attrs.type == 'checkbox' || attrs.type == 'email' )) || tag == 'textarea' || tag == 'select'){
+
+                if(!attrs.readonly && !attrs.ngDisabled){
+                    if(tag == 'select'){
+                        attrs.$set('ngDisabled', "recordStatus.editable==false || recordStatus.waitingForServer");        
+                    }else{
+                        attrs.$set('ngReadonly', "recordStatus.editable==false || recordStatus.waitingForServer");            
+                    }
+                    
+                }
+                attrs.$set('ngClass', "{'invalid-server' : errors."+fieldName+"}");
+            }
+            
+            $compile(element)(scope);
+        }
+    }
+
 }])

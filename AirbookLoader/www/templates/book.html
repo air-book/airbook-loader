@@ -1,32 +1,31 @@
-<ion-view title="Books" angu-record="book" editable="!book.id" save-item="save">
+<ion-view title="Books" persistent-record="book" editable="!book.id" save-item="save">
   <form novalidate name="bookForm">
   <ion-content>
   
 
     <label class="item item-input">
         <span class="input-label">Title</span>
-        <input type="text" angu-field="title" required>
+        <input type="text" persistent-field="title" required>
     </label>
     <label class="item item-input">
         <span class="input-label">Description</span>
-        <textarea angu-field="description" required>
+        <textarea persistent-field="description" required>
         </textarea>
     </label>
 
     <label class="item item-input">
         <span class="input-label">Price</span>
-        <input type="text" angu-field="price" required>
+        <input type="text" persistent-field="price" required>
     </label>
 
     <label class="item item-input">
         <span class="input-label">Editor</span>
-        <input type="text" angu-field="editor" required>
+        <input type="text" persistent-field="editor" required>
     </label>
   
 
   <!-- images -->
-
-  <div persistent-collection="book.images" item-key="'id'" drop-item="dropBookImage" reorder-item="reorderBookImage">
+  <div persistent-collection="book.images" item-key="'id'" drop-item="dropBookImage" reorder-item="reorderBookImage" ng-if="book.id">
     <div class="item item-button-right">
       Images
       <div class="buttons">
@@ -58,10 +57,10 @@
     
   </ion-content>
   <ion-footer-bar>
-    <button class="button button-small button-calm" ng-if="!uiStatus.editMode" ng-click="toEditMode()">Modifica</button>
-    <button class="button button-small button-calm" ng-if="uiStatus.editMode" ng-click="undo();toReadMode()">Annulla</button>
+    <button class="button button-small button-calm" ng-if="!recordStatus.editable" ng-click="toEditMode()">Modifica</button>
+    <button class="button button-small button-calm" ng-if="recordStatus.editable" ng-click="undo();toReadMode()">Annulla</button>
 
-    <button class="button button-small button-assertive button-outline" ng-if="uiStatus.editMode" ng-disabled="bookForm.$invalid" ng-click="save({toReadMode:true})">Salva</button>
+    <button class="button button-small button-assertive button-outline" ng-if="recordStatus.editable" ng-disabled="bookForm.$invalid" ng-click="saveRecord({toReadMode:true})">Salva</button>
 
   </ion-footer-bar>
   </form>

@@ -26,23 +26,24 @@
 
   <!-- images -->
 
-  <div>
+  <div persistent-collection="book.images" item-key="'id'" drop-item="dropBookImage" reorder-item="reorderBookImage">
     <div class="item item-button-right">
       Images
       <div class="buttons">
         <button class="button button-calm" ng-disabled="ui.reorderImages || ui.deleteImages">Add image</button>
         <button class="button button-calm" ng-disabled="ui.deleteImages" ng-click="toggleUi('reorderImages')">Sort</button>
         <button class="button button-calm" ng-disabled="ui.reorderImages" ng-click="toggleUi('deleteImages')">Edit</button>
-        <button class="button button-assertive button-small" ng-click="deleteRecordsWithConfirm(true)" ng-if="toDrop.length>0">ELIMINA {{toDrop.length}} ELEMENTI</button>
+        <button class="button button-assertive button-small" ng-click="deleteRecordsWithConfirm(true)" ng-if="collectionStatus.numToDrop>0">ELIMINA {{collectionStatus.numToDrop}} ELEMENTI</button>
       </div>
     </div>
-    <ion-list show-delete="ui.deleteImages" show-reorder="ui.reorderImages" angu-record-collection collection="book.images" delete-item="dropBookImage">   
+    <ion-list show-delete="ui.deleteImages" show-reorder="ui.reorderImages">   
+
     <ion-item class="text-center" ng-repeat="image in book.images">
       <img ng-src="{{image.image_thumb}}" alt="">
       <!--<ion-delete-button class="ion-minus-circled" ng-click="toggleToDrop(image, $event)"></ion-delete-button>
       -->
-      <ion-delete-button class="icon" ng-class="{true:'ion-minus-circled', false:'ion-ios-minus-outline'}[isToDrop(image)]" ng-click="toggleToDrop(image, $event)">
-            </ion-delete-button>
+      <ion-delete-button class="icon" ng-class="{true:'ion-minus-circled', false:'ion-ios-minus-outline'}[!!collectionStatus.toDrop[image.id]]" ng-click="toggleToDrop(image, $event)">
+      </ion-delete-button>
 
       <ion-reorder-button class="ion-navicon"
                         on-reorder="moveItem(image, $fromIndex, $toIndex, 'order')">

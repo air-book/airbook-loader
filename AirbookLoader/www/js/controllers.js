@@ -152,36 +152,24 @@ angular.module('starter.controllers', [])
 
 
   $scope.reorderBookImage = function(imgData){
-    Restangular.one('books/booksimages', imgData.id).patch({order:imgData.order})
+    return Restangular.one('books/booksimages', imgData.id).patch({order:imgData.order})
   };
 
   $scope.dropBookImage = function(imgData){
 
-    Restangular.one('books/booksimages', imgData.id)
-    .remove()
+    return Restangular.one('books/booksimages', imgData.id)
+    .remove();
+    /*
     .then(function(){
       $scope.book.images = _.reject($scope.book.images, function(item){
         return item.id == imgData.id;
       })
     })
+    */
   };
 
 
-  $scope.moveItem = function(item, fromIndex, toIndex, orderField) {
-      //Move the item in the array
-      $scope.book.images.splice(fromIndex, 1);
-      $scope.book.images.splice(toIndex, 0, item);
-      //we must ensure that the order field is correct.
-      var maxIndex = $scope.book.images.length;
-      for(var i=0;i<maxIndex;i++){
-          if($scope.book.images[i][orderField] != i){
-              $scope.book.images[i][orderField] = i;
-              $scope.reorderBookImage($scope.book.images[i]);
-          }
-          
-      }
-
-  };
+  
     
 })
 

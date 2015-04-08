@@ -1,13 +1,13 @@
 <ion-view title="Books">
   <ion-content>
-    <div class="card" ng-if="appUser.email && hasNoBookshop">
+    <div class="card" ng-if="appUser.username && hasNoBookshop">
         <div class="item">
             <h2>No bookshop</h2>
             <p>Your user has no bookshop ... sorry!</p>
         </div>
         
     </div>
-    <div class="card" ng-if="!appUser.email">
+    <div class="card" ng-if="!appUser.username">
         <div class="item">
             <h2>Not logged</h2>
             <p>Seems like you are not logged in</p>

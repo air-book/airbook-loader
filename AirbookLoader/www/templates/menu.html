@@ -34,10 +34,10 @@
       </ion-list>
     </ion-content>
     <ion-footer-bar>
-      <button menu-close class="button button-clear" ng-if="!appUser.email" ng-click="login()">LOGIN</button>
-      <h2 class="title" title-align="left">{{appUser.email}}</h2>
+      <button menu-close class="button button-clear" ng-if="!appUser.username" ng-click="login()">LOGIN</button>
+      <h2 class="title" title-align="left">{{appUser.username}}</h2>
       
-      <button menu-close class="button button-clear" ng-if="appUser.email" ng-click="logout()">LOGOUT</button>
+      <button menu-close class="button button-clear" ng-if="appUser.username" ng-click="logout()">LOGOUT</button>
     </ion-footer-bar>
   </ion-side-menu>
 </ion-side-menus>

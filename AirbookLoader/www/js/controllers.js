@@ -128,6 +128,13 @@ angular.module('starter.controllers', [])
 
 
 .controller('BookCtrl', function ($scope, Restangular, $timeout, $stateParams) {
+  $scope.book= {};
+  $scope.ui = { deleteImages:false, reorderImages:false }
+
+  $scope.toggleUi = function(k){
+    $scope.ui[k] = !!!$scope.ui[k];
+  };
+
   Restangular.all('books/booksadmin').get($stateParams.bookId)
   .then(function(data){
     $scope.book = data;
@@ -135,13 +142,46 @@ angular.module('starter.controllers', [])
   })
 
   $scope.save = function(){
-    $scope.book.patch();
     $scope.bookCopy = angular.copy($scope.book);
-  }
+    return $scope.book.patch();
+  };
 
   $scope.undo = function(){
     $scope.book = angular.copy($scope.bookCopy); 
-  }
+  };
+
+
+  $scope.reorderBookImage = function(imgData){
+    Restangular.one('books/booksimages', imgData.id).patch({order:imgData.order})
+  };
+
+  $scope.dropBookImage = function(imgData){
+
+    Restangular.one('books/booksimages', imgData.id)
+    .remove()
+    .then(function(){
+      $scope.book.images = _.reject($scope.book.images, function(item){
+        return item.id == imgData.id;
+      })
+    })
+  };
+
+
+  $scope.moveItem = function(item, fromIndex, toIndex, orderField) {
+      //Move the item in the array
+      $scope.book.images.splice(fromIndex, 1);
+      $scope.book.images.splice(toIndex, 0, item);
+      //we must ensure that the order field is correct.
+      var maxIndex = $scope.book.images.length;
+      for(var i=0;i<maxIndex;i++){
+          if($scope.book.images[i][orderField] != i){
+              $scope.book.images[i][orderField] = i;
+              $scope.reorderBookImage($scope.book.images[i]);
+          }
+          
+      }
+
+  };
     
 })
 
@@ -149,16 +189,13 @@ angular.module('starter.controllers', [])
   $scope.book = {}
 
   $scope.save = function(){
-    Restangular.all('books/booksadmin').post($scope.book)
+    return Restangular.all('books/booksadmin').post($scope.book)
     .then(function(data){
       console.log(data)
       $state.go('app.books.detail', {bookId:data.id})
     })
   }
 
-  $scope.undo = function(){
-    $scope.book = angular.copy($scope.bookCopy); 
-  }
-    
+  
 })
 

@@ -7,13 +7,13 @@ angular.module("starter")
     svc.installToken = function(token){
         $http.defaults.headers.common.Authorization = "Token " + token;
         //window.localStorage.setItem("airbook_tk", token);
-        $window.sessionStorage.airbook_tk = token;
+        $window.sessionStorage.airbook_loader_tk = token;
         svc.token = token;
     };
     svc.removeToken = function(){
         //delete $http.defaults.headers.common.Authorization;
-        delete $window.sessionStorage.airbook_tk;
-        window.localStorage.removeItem("airbook_tk");
+        delete $window.sessionStorage.airbook_loader_tk;
+        window.localStorage.removeItem("airbook_loader_tk");
     }
 
     svc.doLogin = function(credentials){
@@ -36,7 +36,8 @@ angular.module("starter")
     };
 
     //tk = window.localStorage.getItem("airbook_tk");
-    tk = $window.sessionStorage.airbook_tk;
+    tk = $window.sessionStorage.airbook_loader_tk;
+    console.log(1, tk)
     if(tk){
         svc.installToken(tk)
     }

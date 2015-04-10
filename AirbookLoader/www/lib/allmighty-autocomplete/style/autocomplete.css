@@ -1,10 +1,4 @@
-
- .selectize-input{
-    height: auto;
- }
-
-
- /* AUTOCOMPLETE */
+/* AUTOCOMPLETE */
 
 .autocomplete{
   width: 100%;
@@ -21,8 +15,10 @@
   position: absolute;
   left: 0;
   width: 100%;
-  
-  z-index: 1000;
+  border-left: 1px solid #888;
+  border-right: 1px solid #888;
+  border-bottom: 1px solid #888;
+  z-index: 1;
 }
 
 .autocomplete li{

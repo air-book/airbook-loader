@@ -99,15 +99,17 @@ angular.module('persitent-records', [])
             
             var promises= [];
             angular.forEach($scope.collectionStatus.toDrop , function(item) {
-                var promise = dropItemFunction(item)
-                .then(function(){
-                    var pos = $scope.collection.indexOf(item);
-                    $timeout(function(){
-                        $scope.collection.splice(pos, 1);    
-                    })
-                    
-                });
-                promises.push(promise);
+                if(dropItemFunction instanceof Function){
+                    var promise = dropItemFunction(item)
+                    .then(function(){
+                        var pos = $scope.collection.indexOf(item);
+                        $timeout(function(){
+                            $scope.collection.splice(pos, 1);    
+                        })
+                        
+                    });
+                    promises.push(promise);
+                }
 
             });
 
@@ -142,13 +144,15 @@ angular.module('persitent-records', [])
             //Move the item in the array
             $scope.collection.splice(fromIndex, 1);
             $scope.collection.splice(toIndex, 0, item);
-            //we must ensure that the order field is correct.
-            var maxIndex = $scope.collection.length;
-            for(var i=0;i<maxIndex;i++){
-                if($scope.collection[i][orderField] != i){
-                    $scope.collection[i][orderField] = i;
-                    setItemOrderFunction($scope.collection[i]);
-                    //$scope.reordered.push($scope.recordCollection[i]);
+            if(setItemOrderFunction instanceof Function){
+                //we must ensure that the order field is correct.
+                var maxIndex = $scope.collection.length;
+                for(var i=0;i<maxIndex;i++){
+                    if($scope.collection[i][orderField] != i){
+                        $scope.collection[i][orderField] = i;
+                        setItemOrderFunction($scope.collection[i]);
+                        //$scope.reordered.push($scope.recordCollection[i]);
+                    }
                 }
             }
         };

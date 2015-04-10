@@ -124,7 +124,7 @@ angular.module('starter.controllers', [])
 })
 
 
-.controller('BookCtrl', function ($scope, Restangular, $timeout, $stateParams, fileHelpers, $cordovaCamera) {
+.controller('BookCtrl', function ($scope, Restangular, $timeout, $stateParams, fileHelpers, $cordovaCamera, $ionicModal) {
   $scope.book= {};
   $scope.ui = { deleteImages:false, reorderImages:false }
 
@@ -220,6 +220,76 @@ angular.module('starter.controllers', [])
         console.error(err)
     });
 
+
+  };
+
+  $ionicModal.fromTemplateUrl('templates/author_modal.html', {
+    scope: $scope,
+    animation: 'slide-in-up'
+  }).then(function(modal) {
+    $scope.modal = modal;
+  });
+  $scope.openModal = function() {
+    $scope.modal.show();
+  };
+  $scope.closeModal = function() {
+    $scope.authorsData.newAuthor = null;
+    $scope.modal.hide();
+  };
+  //Cleanup the modal when we're done with it!
+  $scope.$on('$destroy', function() {
+    $scope.modal.remove();
+  });
+  // Execute action on hide modal
+  $scope.$on('modal.hidden', function() {
+    // Execute action
+  });
+  // Execute action on remove modal
+  $scope.$on('modal.removed', function() {
+    // Execute action
+  });
+
+  $scope.authorsData = { autori : [], newAuthor : null };
+  $scope.refreshAuthors = function(search){
+    Restangular.all('books/booksauthors').getList({search:search})
+    .then(function(authors){
+      console.log(1, authors);
+      $timeout(function(){
+        $scope.authorsData.raw = authors;
+        $scope.authorsData.autori =  _.pluck(authors, 'author');
+        
+      })
+    })
+  }
+
+  
+  $scope.addAuthor = function(){
+    $timeout(function(){
+      $scope.openModal();   
+    })
+  };
+
+  $scope.dropAuthor = function($index){
+    $scope.book.authors.splice($index, 1);
+    //$scope.book.patch({authors:$scope.book.authors});
+  };
+
+  $scope.createNewAuthor = function(){
+    Restangular.all('books/booksauthors').post({author:$scope.authorsData.newAuthor})
+    .then(function(savedAuthor){
+      $scope.book.authors.push(savedAuthor);
+      $scope.save();
+      $scope.closeModal();
+    
+    })
+  };
+
+
+  $scope.chooseAndCloseModal = function(){
+    var author = _.findWhere($scope.authorsData.raw, {author: $scope.authorsData.newAuthor })
+    $scope.book.authors.push(author);
+    $scope.save();
+    $scope.closeModal();
 
   }
 

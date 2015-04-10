@@ -1,6 +1,6 @@
 <ion-view title="{{book.title}}" persistent-record="book" editable="!book.id" save-item="save" drop-item="dropBook">
   <form novalidate name="bookForm">
-  <ion-header-bar class="bar bar-subheader">
+  <ion-header-bar class="bar bar-stable bar-subheader">
     <button class="button button-small button-calm" ng-if="!recordStatus.editable" ng-click="toEditMode()">Modifica</button>
     <button class="button button-small button-calm" ng-if="recordStatus.editable" ng-click="undo();toReadMode()">Annulla</button>  
     <h2 class="title"></h2>
@@ -29,13 +29,28 @@
         <span class="input-label">Editor</span>
         <input type="text" persistent-field="editor" required>
     </label>
+
+
+    <!--authors -->
+    <div class="item item-divider">
+
+      Authors
+      <button class="button button-calm button-small icon ion-plus" ng-click="addAuthor()" style="float:right;"></button>
+    </div>
+    
+      <label class="item item-button-right" ng-repeat="author in book.authors track by $index" >
+        <span class="input-label">{{author.author}}</span>
+        <button class="button icon ion-minus button-assertive" ng-if="recordStatus.editable" ng-click="dropAuthor($index)"></button>
+      
+    </label>
+    
+
   
-  <div class="item item-divider"></div>
-  <!-- images -->
-  <div persistent-collection="book.images" item-key="'id'" drop-item="dropBookImage" reorder-item="reorderBookImage" ng-if="book.id">
-    <div class="item item-button-right">
-      Images
-      <div class="buttons">
+  <div class="item item-divider">
+    Images
+
+      
+      <div class="buttons" style="float:right;">
         <button ng-if="!hasCordova" class="button icon ion-folder button-calm button-small" ng-disabled="ui.reorderImages || ui.deleteImages" ng-file-select accept="'image/*'" ng-capture="'camera'"  ng-file-change="addImageFileSystem($files)"></button>
         
         <button ng-if="hasCordova" class="button icon ion-camera button-calm button-small" ng-disabled="ui.reorderImages || ui.deleteImages" accept="'image/*'" ng-file-select ng-file-change="addImageCordova()"></button>
@@ -45,15 +60,19 @@
         <button class="button icon ion-edit button-calm button-small" ng-disabled="ui.reorderImages" ng-click="toggleUi('deleteImages')"></button>
         <button class="button button-assertive button-small" ng-click="deleteRecordsWithConfirm(true)" ng-if="collectionStatus.numToDrop>0">ELIMINA {{collectionStatus.numToDrop}} ELEMENTI</button>
       </div>
-    </div>
+    
 
 
+  </div>
+  <!-- images -->
+  <div persistent-collection="book.images" item-key="'id'" drop-item="dropBookImage" reorder-item="reorderBookImage" ng-if="book.id">
+    
     
 
 
     <ion-list show-delete="ui.deleteImages" show-reorder="ui.reorderImages">   
 
-    <ion-item class="text-center" ng-repeat="image in book.images|orderBy:'order' track by image.id">
+      <ion-item class="text-center" ng-repeat="image in book.images|orderBy:'order' track by image.id">
       <img ng-src="{{image.image_thumb}}" alt="">
       <!--<ion-delete-button class="ion-minus-circled" ng-click="toggleToDrop(image, $event)"></ion-delete-button>
       -->
@@ -63,16 +82,16 @@
       <ion-reorder-button class="ion-navicon"
                         on-reorder="moveItem(image, $fromIndex, $toIndex, 'order')">
 
-    </ion-reorder-button>
+      </ion-reorder-button>
 
-    </ion-item>
+      </ion-item>
     </ion-list>  
 
     
   </div>
     
   </ion-content>
-  <ion-footer-bar>
+  <ion-footer-bar class="bar-dark">
     <h2 class="title"></h2>
     <button class="button button-small button-assertive" ng-if="recordStatus.editable" ng-click="deleteWithConfirm('app.books.list')">Elimina</button>
 

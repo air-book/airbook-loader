@@ -15,11 +15,11 @@
         
     </div>
     <ion-list ng-if="!hasNoBookshop">
-        <ion-item class="item-thumbnail-left item-button-right" ng-repeat="book in books" ui-sref="app.books.detail({bookId:book.id})">
+        <ion-item class="item-thumbnail-left" ng-repeat="book in books" ui-sref="app.books.detail({bookId:book.id})">
             <img ng-src="{{book.images[0].image_thumb}}" alt="" class="">
             <h3>{{book.title}}</h3>
             <p>{{book.description}}</p>
-            <button class="button button-clear">edit</button>
+            
         </ion-item>
 
         <ion-infinite-scroll

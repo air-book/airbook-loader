@@ -1,8 +1,8 @@
 angular.module('persitent-records', [])
 
 .controller('PersistentCollectionCtrl', 
-    ['$scope', '$attrs', '$timeout', '$q', '$ionicPopup',
-    function ($scope, $attrs, $timeout, $q, $ionicPopup) {
+    ['$scope', '$attrs', '$timeout', '$q', '$ionicPopup', '$state',
+    function ($scope, $attrs, $timeout, $q, $ionicPopup, $state) {
         $scope.collectionStatus = {
             toDrop : {},
             numToDrop : 0,
@@ -158,8 +158,8 @@ angular.module('persitent-records', [])
 
 
 .controller('PersistentRecordCtrl', 
-    ['$scope', '$attrs', '$timeout', '$q', '$ionicPopup',
-    function ($scope, $attrs, $timeout, $q, $ionicPopup) {
+    ['$scope', '$attrs', '$timeout', '$q', '$ionicPopup', '$state',
+    function ($scope, $attrs, $timeout, $q, $ionicPopup, $state) {
         $scope.recordStatus = {
             editable : false,
             waitingForServer : false,

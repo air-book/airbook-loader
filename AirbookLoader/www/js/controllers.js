@@ -4,6 +4,9 @@ angular.module('starter.controllers', [])
   // Form data for the login modal
   
   $rootScope.appUser = {};
+  
+  $rootScope.hasCordova = !!window.cordova;
+
   $scope.loginData = {};
 
   $rootScope.logout = function(){
@@ -44,7 +47,6 @@ angular.module('starter.controllers', [])
 
   // Perform the login action when the user submits the login form
   $scope.doLogin = function() {
-    console.log('Doing login', $scope.loginData);
     return AuthService.doLogin($scope.loginData)
         .then(function(r){
             Restangular.oneUrl('users/me').get()
@@ -64,9 +66,7 @@ angular.module('starter.controllers', [])
 
 
 .controller('BooksCtrl', function ($scope, Restangular, $timeout) {
-    console.log("Books")
-
-
+    
     $scope.books = [];
     $scope.hasNoBookshop = false;
     $scope.filters = {
@@ -94,14 +94,12 @@ angular.module('starter.controllers', [])
             $timeout(function(){
               $scope.books = $scope.books.concat(data);
               $scope.metadata = data.metadata;
-              console.log(1, $scope.metadata)
               updating = false;
               $scope.hasNoBookshop = false;
               $scope.$broadcast('scroll.infiniteScrollComplete');
             })
         })
         .catch(function(err){
-          
           $scope.hasNoBookshop = true;
         })
     };
@@ -112,7 +110,6 @@ angular.module('starter.controllers', [])
             updateFromServer($scope.metadata.number + 1);
         }
     };
-    
 
     updateFromServer(1);
 
@@ -127,7 +124,7 @@ angular.module('starter.controllers', [])
 })
 
 
-.controller('BookCtrl', function ($scope, Restangular, $timeout, $stateParams) {
+.controller('BookCtrl', function ($scope, Restangular, $timeout, $stateParams, fileHelpers, $cordovaCamera) {
   $scope.book= {};
   $scope.ui = { deleteImages:false, reorderImages:false }
 
@@ -150,40 +147,91 @@ angular.module('starter.controllers', [])
     $scope.book = angular.copy($scope.bookCopy); 
   };
 
-
-  $scope.reorderBookImage = function(imgData){
-    return Restangular.one('books/booksimages', imgData.id).patch({order:imgData.order})
+  $scope.reorderBookImage = function(image){
+    return Restangular.one('books/booksimages', image.id).patch({order:image.order})
   };
 
-  $scope.dropBookImage = function(imgData){
+  $scope.dropBookImage = function(image){
 
-    return Restangular.one('books/booksimages', imgData.id)
+    return Restangular.one('books/booksimages', image.id)
     .remove();
-    /*
-    .then(function(){
-      $scope.book.images = _.reject($scope.book.images, function(item){
-        return item.id == imgData.id;
-      })
-    })
-    */
   };
 
 
-  
+
+
+  $scope.addImageFileSystem = function(files){
+    if (files && files.length) {
+        
+      var file = files[0];
+      fileHelpers.loadFile(file)
+      .then(function(fileData){
+        console.log("fileData", fileData);
+        var newImage = {
+          book : $scope.book.id,
+          image : fileData
+        };
+
+        Restangular.all('books/booksimages')
+        .post(newImage)
+        .then(function(savedImage){
+          $scope.book.images.push(savedImage);
+        })
+      
+      })
+        
+    }
+  };
+
+  $scope.addImageCordova = function(){
+
+    var options = {
+      quality: 50,
+      destinationType: Camera.DestinationType.DATA_URL,
+      sourceType: Camera.PictureSourceType.CAMERA,
+      allowEdit: true,
+      encodingType: Camera.EncodingType.JPEG,
+      //targetWidth: 100,
+      //targetHeight: 100,
+      popoverOptions: CameraPopoverOptions,
+      saveToPhotoAlbum: false
+    };
+
+    $cordovaCamera.getPicture(options).then(function(imageData) {
+      var uri = "data:image/jpeg;base64," + imageData;
+      var fileData = { uri : uri, filename : 'book-image.jpg' };
+      var newImage = {
+          book : $scope.book.id,
+          image : fileData
+        };
+
+      Restangular.all('books/booksimages')
+      .post(newImage)
+      .then(function(savedImage){
+        $scope.book.images.push(savedImage);
+      })
+
+    }, function(err) {
+        
+        console.error(err)
+    });
+
+
+  }
+
     
 })
 
 .controller('NewBookCtrl', function ($scope, Restangular, $timeout, $stateParams, $state) {
+
   $scope.book = {}
 
   $scope.save = function(){
     return Restangular.all('books/booksadmin').post($scope.book)
     .then(function(data){
-      console.log(data)
       $state.go('app.books.detail', {bookId:data.id})
-    })
-  }
-
+    });
+  };
   
 })
 

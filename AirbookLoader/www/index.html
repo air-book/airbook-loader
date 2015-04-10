@@ -19,8 +19,10 @@
     <script src="lib/restangular/dist/restangular.js"></script>
     
     <script src="js/persistent-records/persistent-records.js"></script>
-    
 
+    <script src="lib/ng-file-upload/dist/angular-file-upload-all.min.js"></script>
+    
+    <script src="lib/ngCordova/dist/ng-cordova.js"></script>
     <!-- cordova script (this will be a 404 during development) -->
     <script src="cordova.js"></script>
 
@@ -28,10 +30,26 @@
     <!-- your app's js -->
     <script src="js/app.js"></script>
     <script src="js/auth-service.js"></script>
+    <script src="js/file-helpers.js"></script>
     <script src="js/controllers.js"></script>
   </head>
 
-  <body ng-app="starter" ng-controller="AppCtrl">
+  <body ng-controller="AppCtrl">
     <ion-nav-view></ion-nav-view>
+
+    <script>
+    //manually bootstrapping app in order to have cordova (And plugins loaded) ready to go
+    angular.element(document).ready(function() {
+        if (window.cordova) {
+            document.addEventListener('deviceready', function() {
+                angular.bootstrap(document.body, ['starter']);
+            }, false);
+        } else {
+            angular.bootstrap(document.body, ['starter']);
+        }
+    });
+    </script>
+
+
   </body>
 </html>

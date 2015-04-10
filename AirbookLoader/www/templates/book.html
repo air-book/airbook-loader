@@ -29,15 +29,24 @@
     <div class="item item-button-right">
       Images
       <div class="buttons">
-        <button class="button button-calm" ng-disabled="ui.reorderImages || ui.deleteImages">Add image</button>
+        <button class="button button-calm" ng-disabled="ui.reorderImages || ui.deleteImages" ng-file-select accept="'image/*'" ng-capture="'camera'|'other'"  ng-file-change="addImageFileSystem($files)">Add image</button>
+        <!--
+        <button ng-if="hasCordova" class="button button-calm" ng-disabled="ui.reorderImages || ui.deleteImages" accept="'image/*'" ng-file-select ng-file-change="addImageCordova()">Add image from camera</button>
+        -->
+
         <button class="button button-calm" ng-disabled="ui.deleteImages" ng-click="toggleUi('reorderImages')">Sort</button>
         <button class="button button-calm" ng-disabled="ui.reorderImages" ng-click="toggleUi('deleteImages')">Edit</button>
         <button class="button button-assertive button-small" ng-click="deleteRecordsWithConfirm(true)" ng-if="collectionStatus.numToDrop>0">ELIMINA {{collectionStatus.numToDrop}} ELEMENTI</button>
       </div>
     </div>
+
+
+    
+
+
     <ion-list show-delete="ui.deleteImages" show-reorder="ui.reorderImages">   
 
-    <ion-item class="text-center" ng-repeat="image in book.images">
+    <ion-item class="text-center" ng-repeat="image in book.images|orderBy:'order' track by image.id">
       <img ng-src="{{image.image_thumb}}" alt="">
       <!--<ion-delete-button class="ion-minus-circled" ng-click="toggleToDrop(image, $event)"></ion-delete-button>
       -->

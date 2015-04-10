@@ -65,21 +65,17 @@ angular.module('persitent-records', [])
             return itemKey ? item[itemKey] : item;
         };
 
-
         $scope.dropItem = function(){
 
         };
 
         $scope.toReadMode = function(){
             $scope.collectionStatus.editable = false;
-        }
+        };
 
         $scope.toEditMode = function(){
             $scope.collectionStatus.editable = true;
-        }
-
-
-
+        };
         
         $scope.toggleToDrop = function(item, $event){
             if($event){
@@ -103,7 +99,6 @@ angular.module('persitent-records', [])
             
             var promises= [];
             angular.forEach($scope.collectionStatus.toDrop , function(item) {
-                console.log("dropping ", item)
                 var promise = dropItemFunction(item)
                 .then(function(){
                     var pos = $scope.collection.indexOf(item);
@@ -119,13 +114,12 @@ angular.module('persitent-records', [])
             return $q.all(promises).then(function(){
                 //humaneNotifications.success.log("Elementi eliminati");
                 $scope.collectionStatus.toDrop = {};
+                $scope.collectionStatus.numToDrop = 0;
                 if(switchToRead){
                     $scope.toReadMode();
                 }
             });
-
         };
-
 
 
         $scope.deleteRecordsWithConfirm = function(switchToRead) {
@@ -142,7 +136,7 @@ angular.module('persitent-records', [])
                return;
              }
            });
-         };
+        };
 
         $scope.moveItem = function(item, fromIndex, toIndex, orderField) {
             //Move the item in the array
@@ -156,12 +150,8 @@ angular.module('persitent-records', [])
                     setItemOrderFunction($scope.collection[i]);
                     //$scope.reordered.push($scope.recordCollection[i]);
                 }
-                
             }
-
         };
-
-
 
     }
 ])
@@ -227,15 +217,13 @@ angular.module('persitent-records', [])
             true
         );
         
-        
         $scope.toReadMode = function(){
             $scope.recordStatus.editable = false;
-        }
+        };
 
         $scope.toEditMode = function(){
             $scope.recordStatus.editable = true;
-        }
-
+        };
 
 
         $scope.deleteWithConfirm = function(toState, toParams) {
@@ -254,11 +242,12 @@ angular.module('persitent-records', [])
          };
 
 
-        $scope.delete = function(toState,toParams){
+        $scope.delete = function(toState, toParams){
             $scope.recordStatus.waitingForServer = true;
             dropItemFunction($scope.record)
                 .then(function(resp){
                     $scope.recordStatus.errors = null;
+                    $scope.recordStatus.waitingForServer = false;
                     if(toState){
                         $state.go(toState, toParams);
                     }
@@ -316,7 +305,7 @@ angular.module('persitent-records', [])
         scope : true,
         controller : 'PersistentCollectionCtrl'
             
-        }
+    }
     
 }])
 
@@ -326,8 +315,7 @@ angular.module('persitent-records', [])
         restrict: 'A',
         scope : true,
         controller : 'PersistentRecordCtrl'
-            
-        }
+    }
     
 }])
 
@@ -340,7 +328,10 @@ angular.module('persitent-records', [])
             
             var fieldName = attrs.persistentField;
             var modelName = "record."+ fieldName;
+            
+            //remove peristent-field attr in order to avoid absolute recursion when recompiling
             element.removeAttr('persistent-field');
+            
             attrs.$set('ngModel', modelName);
             attrs.$set('name', fieldName);
 
@@ -349,15 +340,15 @@ angular.module('persitent-records', [])
             
             if(attrs.persistentFieldInit != undefined){
                 var recordController = controllers[0];
-                var record = recordController.getRecord()
+                var record = recordController.getRecord();
                 if(record[fieldName] == undefined){
                     recordController.setValue(fieldName, scope.$eval(attrs.persistentFieldInit));
                 }
             }
 
             //appending an error icon to label
+            //very ionic-biased
             var par = $(element).parent();
-            console.log("p",par)
             var label = $(par).find('.input-label');
             if(label.length){
                 var newElm = '<i class="icon assertive ion-alert-circled" ng-if="'+formName+'.'+ fieldName +'.$invalid || recordStatus.errors.'+fieldName+'"> </i>';
@@ -366,6 +357,7 @@ angular.module('persitent-records', [])
             };  
 
             //appending server error msg
+            //very ionic-biased
             var newMsg = '<p class="item assertive" ng-if="recordStatus.errors.'+fieldName+'"><b>'+fieldName+'</b>: {{recordStatus.errors.'+fieldName+'[0]}}</p>';
             var el = $compile(newMsg)(angular.element(par[0]).scope());
             par.after(el);
@@ -383,7 +375,7 @@ angular.module('persitent-records', [])
                 }
                 attrs.$set('ngClass', "{'invalid-server' : errors."+fieldName+"}");
             }
-            
+            //recompile element after our modifications            
             $compile(element)(scope);
         }
     }

@@ -30,7 +30,7 @@
         <input type="text" persistent-field="editor" required>
     </label>
 
-
+    <div ng-if="book.id">
     <!--authors -->
     <div class="item item-divider">
 
@@ -46,7 +46,7 @@
     
 
   
-  <div class="item item-divider">
+    <div class="item item-divider">
     Images
 
       
@@ -89,7 +89,8 @@
 
     
   </div>
-    
+
+  </div><!-- book images and authors-->    
   </ion-content>
   <ion-footer-bar class="bar-dark">
     <h2 class="title"></h2>

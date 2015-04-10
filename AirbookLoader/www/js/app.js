@@ -22,7 +22,7 @@ angular.module('starter', ['ionic', 'starter.controllers', 'restangular', 'persi
 
 .config(function($stateProvider, $urlRouterProvider, RestangularProvider) {
 
-  var baseServerUrl = '/';
+  var baseServerUrl = 'http://178.62.218.119:8080/';
   RestangularProvider.setBaseUrl(baseServerUrl);
 
   RestangularProvider.setResponseExtractor(function(response, operation, what, url) {

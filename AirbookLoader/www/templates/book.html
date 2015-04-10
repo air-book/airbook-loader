@@ -29,10 +29,10 @@
     <div class="item item-button-right">
       Images
       <div class="buttons">
-        <button class="button button-calm" ng-disabled="ui.reorderImages || ui.deleteImages" ng-file-select accept="'image/*'" ng-capture="'camera'|'other'"  ng-file-change="addImageFileSystem($files)">Add image</button>
-        <!--
+        <button class="button button-calm" ng-disabled="ui.reorderImages || ui.deleteImages" ng-file-select accept="'image/*'" ng-capture="'camera'"  ng-file-change="addImageFileSystem($files)">Add image</button>
+        
         <button ng-if="hasCordova" class="button button-calm" ng-disabled="ui.reorderImages || ui.deleteImages" accept="'image/*'" ng-file-select ng-file-change="addImageCordova()">Add image from camera</button>
-        -->
+        
 
         <button class="button button-calm" ng-disabled="ui.deleteImages" ng-click="toggleUi('reorderImages')">Sort</button>
         <button class="button button-calm" ng-disabled="ui.reorderImages" ng-click="toggleUi('deleteImages')">Edit</button>

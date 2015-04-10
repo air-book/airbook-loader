@@ -1,0 +1,26 @@
+<ion-modal-view>
+    <ion-header-bar class="bar-dark">
+      <h1 class="title">Choose author</h1>
+    </ion-header-bar>
+    <ion-content>
+
+         <div class="item item-input item-text-wrap" style="padding-bottom:100px">
+            <span class="input-label">Autore</span>
+            
+            <autocomplete ng-model="authorsData.newAuthor" data="authorsData.autori" on-type="refreshAuthors"></autocomplete>
+            
+        </div>
+
+
+        
+        <div class="item text-center" ng-if="authorsData.autori.length==0 && authorsData.newAuthor" >
+            <button class="button button-assertive" ng-click="createNewAuthor()">Add</button>
+    
+        </div>
+      
+    </ion-content>
+    <ion-footer-bar class="bar-dark">
+        <button class="button button-calm" ng-click="closeModal()">Cancel</button>
+        <button class="button button-positive" ng-disabled="authorsData.autori.length==0 || !authorsData.newAuthor" ng-click="chooseAndCloseModal()">Choose</button>
+    </ion-footer-bar>
+  </ion-modal-view>

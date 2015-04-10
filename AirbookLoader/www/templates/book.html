@@ -1,5 +1,12 @@
-<ion-view title="Books" persistent-record="book" editable="!book.id" save-item="save">
+<ion-view title="{{book.title}}" persistent-record="book" editable="!book.id" save-item="save" drop-item="dropBook">
   <form novalidate name="bookForm">
+  <ion-header-bar class="bar bar-subheader">
+    <button class="button button-small button-calm" ng-if="!recordStatus.editable" ng-click="toEditMode()">Modifica</button>
+    <button class="button button-small button-calm" ng-if="recordStatus.editable" ng-click="undo();toReadMode()">Annulla</button>  
+    <h2 class="title"></h2>
+    <button class="button button-small button-assertive" ng-if="recordStatus.editable" ng-disabled="bookForm.$invalid" ng-click="saveRecord({toReadMode:true})">Salva</button>
+
+  </ion-header-bar>
   <ion-content>
   
 
@@ -23,19 +30,19 @@
         <input type="text" persistent-field="editor" required>
     </label>
   
-
+  <div class="item item-divider"></div>
   <!-- images -->
   <div persistent-collection="book.images" item-key="'id'" drop-item="dropBookImage" reorder-item="reorderBookImage" ng-if="book.id">
     <div class="item item-button-right">
       Images
       <div class="buttons">
-        <button class="button button-calm" ng-disabled="ui.reorderImages || ui.deleteImages" ng-file-select accept="'image/*'" ng-capture="'camera'"  ng-file-change="addImageFileSystem($files)">Add image</button>
+        <button ng-if="!hasCordova" class="button icon ion-folder button-calm button-small" ng-disabled="ui.reorderImages || ui.deleteImages" ng-file-select accept="'image/*'" ng-capture="'camera'"  ng-file-change="addImageFileSystem($files)"></button>
         
-        <button ng-if="hasCordova" class="button button-calm" ng-disabled="ui.reorderImages || ui.deleteImages" accept="'image/*'" ng-file-select ng-file-change="addImageCordova()">Add image from camera</button>
+        <button ng-if="hasCordova" class="button icon ion-camera button-calm button-small" ng-disabled="ui.reorderImages || ui.deleteImages" accept="'image/*'" ng-file-select ng-file-change="addImageCordova()"></button>
         
 
-        <button class="button button-calm" ng-disabled="ui.deleteImages" ng-click="toggleUi('reorderImages')">Sort</button>
-        <button class="button button-calm" ng-disabled="ui.reorderImages" ng-click="toggleUi('deleteImages')">Edit</button>
+        <button class="button icon ion-drag button-calm button-small" ng-disabled="ui.deleteImages" ng-click="toggleUi('reorderImages')"></button>
+        <button class="button icon ion-edit button-calm button-small" ng-disabled="ui.reorderImages" ng-click="toggleUi('deleteImages')"></button>
         <button class="button button-assertive button-small" ng-click="deleteRecordsWithConfirm(true)" ng-if="collectionStatus.numToDrop>0">ELIMINA {{collectionStatus.numToDrop}} ELEMENTI</button>
       </div>
     </div>
@@ -66,11 +73,10 @@
     
   </ion-content>
   <ion-footer-bar>
-    <button class="button button-small button-calm" ng-if="!recordStatus.editable" ng-click="toEditMode()">Modifica</button>
-    <button class="button button-small button-calm" ng-if="recordStatus.editable" ng-click="undo();toReadMode()">Annulla</button>
+    <h2 class="title"></h2>
+    <button class="button button-small button-assertive" ng-if="recordStatus.editable" ng-click="deleteWithConfirm('app.books.list')">Elimina</button>
 
-    <button class="button button-small button-assertive button-outline" ng-if="recordStatus.editable" ng-disabled="bookForm.$invalid" ng-click="saveRecord({toReadMode:true})">Salva</button>
-
+    
   </ion-footer-bar>
   </form>
 </ion-view>

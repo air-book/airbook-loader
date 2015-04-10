@@ -143,6 +143,10 @@ angular.module('starter.controllers', [])
     return $scope.book.patch();
   };
 
+  $scope.dropBook = function(book){
+    return book.remove()
+  }
+
   $scope.undo = function(){
     $scope.book = angular.copy($scope.bookCopy); 
   };

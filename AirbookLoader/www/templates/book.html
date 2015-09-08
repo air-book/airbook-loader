@@ -43,7 +43,7 @@
     
       <label class="item item-button-right" ng-repeat="author in book.authors track by $index" >
         <span class="input-label">{{author.name}}</span>
-        <button class="button icon ion-minus button-assertive" ng-if="recordStatus.editable" ng-click="dropAuthor($index)"></button>
+        <button class="button button-small button-assertive icon ion-minus" ng-show="recordStatus.editable" ng-click="dropAuthor($index)"></button>
       
     </label>
     

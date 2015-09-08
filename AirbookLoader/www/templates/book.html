@@ -48,7 +48,7 @@
     </label>
     
 
-  
+    <div persistent-collection="book.images" item-key="'id'" drop-item="dropBookImage" reorder-item="reorderBookImage" ng-if="book.id">
     <div class="item item-divider">
     Images
 
@@ -68,7 +68,7 @@
 
   </div>
   <!-- images -->
-  <div persistent-collection="book.images" item-key="'id'" drop-item="dropBookImage" reorder-item="reorderBookImage" ng-if="book.id">
+  <div>
     
     <ion-list show-delete="ui.deleteImages" show-reorder="ui.reorderImages">   
 
@@ -88,6 +88,7 @@
     </ion-list>  
 
     
+  </div>
   </div>
 
   </div><!-- book images and authors-->    

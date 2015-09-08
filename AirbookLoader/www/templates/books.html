@@ -31,6 +31,6 @@
     </ion-list>
   </ion-content>
   <ion-footer-bar class="bar-dark">
-    <button class="button button-calm" ui-sref="app.books.new">Add book</button>
+    <button ng-if="appUser.email" class="button button-calm" ui-sref="app.books.new">Add book</button>
   </ion-footer-bar>
 </ion-view>

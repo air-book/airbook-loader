@@ -5,8 +5,8 @@
             <h3>Welcome to airbook loader</h3>
         </div>
         <div class="item text-center">
-            <span ng-if="appUser.username">You are logged in as {{appUser.username}}</span>
-            <div class="text-center" ng-if="!appUser.username">
+            <span ng-if="appUser.email">You are logged in as {{appUser.email}}</span>
+            <div class="text-center" ng-if="!appUser.email">
                 <p>
                     Not logged in
                 </p>
@@ -20,7 +20,7 @@
             
         </div>
         <div class="item text-center">
-            <div class="text-center" ng-if="appUser.username">
+            <div class="text-center" ng-if="appUser.email">
                 <p>
                     <button class="button button-calm" ui-sref="app.books.list">EDIT BOOKS</button>
                 </p>

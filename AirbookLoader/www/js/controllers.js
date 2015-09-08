@@ -101,7 +101,7 @@ angular.module('starter.controllers', [])
         })
         .catch(function(err){
           $scope.hasNoBookshop = true;
-        })
+        });
     };
 
     $scope.updateBooks = function(){
@@ -253,10 +253,9 @@ angular.module('starter.controllers', [])
   $scope.refreshAuthors = function(search){
     Restangular.all('books/booksauthors').getList({search:search})
     .then(function(authors){
-      console.log(1, authors);
       $timeout(function(){
         $scope.authorsData.raw = authors;
-        $scope.authorsData.autori =  _.pluck(authors, 'author');
+        $scope.authorsData.autori =  _.pluck(authors, 'name');
         
       })
     })
@@ -275,9 +274,10 @@ angular.module('starter.controllers', [])
   };
 
   $scope.createNewAuthor = function(){
-    Restangular.all('books/booksauthors').post({author:$scope.authorsData.newAuthor})
+    Restangular.all('books/booksauthors').post({name:$scope.authorsData.newAuthor})
     .then(function(savedAuthor){
       $scope.book.authors.push(savedAuthor);
+      console.log(101, $scope.book);
       $scope.save();
       $scope.closeModal();
     
@@ -286,7 +286,12 @@ angular.module('starter.controllers', [])
 
 
   $scope.chooseAndCloseModal = function(){
-    var author = _.findWhere($scope.authorsData.raw, {author: $scope.authorsData.newAuthor })
+    var author = _.findWhere($scope.authorsData.raw, {name: $scope.authorsData.newAuthor })
+    if(_.findWhere($scope.book.authors, {name: $scope.authorsData.newAuthor })){
+      $scope.closeModal();
+      return;
+    }
+    console.log(100, $scope.book);
     $scope.book.authors.push(author);
     $scope.save();
     $scope.closeModal();
